@@ -76,7 +76,7 @@ class LottoDataManager {
                 )
 
                 if (numbers.size == 6 && response.bnusNo != null) {
-                    history.add(LottoTicket(response.drwNo, numbers, response.bnusNo))
+                    history.add(LottoTicket(response.drwNo, numbers))
                 }
 
                 if (currentDrwNo % 100 == 0) {
@@ -92,4 +92,5 @@ class LottoDataManager {
         client.close() // 클라이언트 종료
         return history
     }
+
 }
