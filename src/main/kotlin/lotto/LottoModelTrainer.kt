@@ -3,12 +3,12 @@ package lotto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.*
 import weka.classifiers.Classifier
-import weka.classifiers.functions.Logistic
 import weka.core.Attribute
 import weka.core.DenseInstance
 import weka.core.Instances
 import org.jetbrains.kotlinx.dataframe.DataRow
 import org.jetbrains.kotlinx.dataframe.api.rows
+import weka.classifiers.AbstractClassifier
 
 
 // 1~45번 숫자에 대한 분석
@@ -50,8 +50,12 @@ class LottoModelTrainer {
     }
 
     // 훈련
-    fun train(trainingData: DataFrame<*>) {
+    fun train(trainingData: DataFrame<*>, baseClassifier: Classifier) {
         println("[LottoModelTrainer] 45개 모델 훈련 시작")
+        val modelName = baseClassifier.javaClass.simpleName
+
+        models.clear()
+
 
         val numberColumn: List<Int> = try {
             trainingData["number"].toList() as List<Int>
@@ -85,14 +89,11 @@ class LottoModelTrainer {
                 val numData = numDataRows.toDataFrame()
 
                 val trainingInstances = convertDataFrameToInstances(numData)
-                val classifier = Logistic()
+                val classifier = AbstractClassifier.makeCopy(baseClassifier)
                 classifier.buildClassifier(trainingInstances)
 
                 models[num] = classifier
 
-                if (num % 5 == 0 || num == 1 || num == 45) {
-                    println("[LottoModelTrainer] ... $num 번 모델 훈련 완료 ...")
-                }
             } catch (e: Exception) {
                 println("예외 메시지: ${e.message}\n")
                 throw e
@@ -101,5 +102,7 @@ class LottoModelTrainer {
         println("[LottoModelTrainer] 총 45개 모델 훈련 완료.")
     }
 
-    fun getModels(): Map<Int, Classifier> = models
+    fun getModels(): Map<Int, Classifier> {
+        return models.toMap()
+    }
 }
