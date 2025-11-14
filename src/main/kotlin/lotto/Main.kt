@@ -5,7 +5,6 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.cio.*
 import io.ktor.server.html.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
@@ -95,7 +94,8 @@ lateinit var bestPredictor_WinsStrategy: LottoPredictor
 lateinit var championWins: ModelScore
 
 lateinit var fullHistoryForPredict: List<LottoTicket>
-lateinit var latest10DrawsForPredict: List<LottoTicket>
+lateinit var latestDrawsShortForPredict: List<LottoTicket>
+lateinit var latestDrawsMidForPredict: List<LottoTicket>
 var lastDrawNo: Int = 0
 lateinit var pastTestReportHtml: String
 
@@ -113,7 +113,7 @@ fun main() {
         val fullHistory = dataManager.fetchAllHistory()
         lastDrawNo = fullHistory.last().drwNo
 
-        if (fullHistory.size < 21) {
+        if (fullHistory.size < 26) {
             println("오류: 데이터 부족. 서버를 시작할 수 없습니다.")
             return@runBlocking
         }
@@ -122,7 +122,8 @@ fun main() {
         println("\n과거 검증 시작")
         val trainingHistoryPast = fullHistory.dropLast(1)
         val actualAnswer = fullHistory.last()
-        val latest10DrawsPast = trainingHistoryPast.takeLast(10)
+        val latestDrawsShortPast = trainingHistoryPast.takeLast(10)
+        val latestDrawsMidPast = trainingHistoryPast.takeLast(25)
 
         val fePast = FeatureEngineer()
         val tdPast = fePast.createTrainingData(trainingHistoryPast)
@@ -136,7 +137,12 @@ fun main() {
         }
         val pastResults = pastPredictors.mapValues { (name, predictor) ->
             println("[Main] '${name}' 모델로 과거 예측 중")
-            predictor.predictNextDraw(trainingHistoryPast, latest10DrawsPast, 3)
+            predictor.predictNextDraw(
+                trainingHistoryPast,
+                latestDrawsShortPast,
+                latestDrawsMidPast,
+                3
+            )
         }
 
         // 모든 모델의 등수 계산
@@ -179,7 +185,8 @@ fun main() {
         )
 
         fullHistoryForPredict = fullHistory
-        latest10DrawsForPredict = fullHistory.takeLast(10)
+        latestDrawsShortForPredict = fullHistory.takeLast(10)
+        latestDrawsMidForPredict = fullHistory.takeLast(25)
 
         println("미래 예측 완료")
     }
@@ -294,7 +301,8 @@ fun main() {
                 // 예측 실행
                 val resultSets = predictorToUse.predictNextDraw(
                     fullHistoryForPredict,
-                    latest10DrawsForPredict,
+                    latestDrawsShortForPredict,
+                    latestDrawsMidForPredict,
                     n
                 )
 

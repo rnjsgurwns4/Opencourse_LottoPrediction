@@ -24,8 +24,10 @@ class LottoModelTrainer {
         val attributes = ArrayList<Attribute>()
 
         attributes.add(Attribute("recency"))
-        attributes.add(Attribute("freq_latest"))
-        attributes.add(Attribute("freq_total"))
+        attributes.add(Attribute("freq_short"))
+        attributes.add(Attribute("freq_mid"))
+        attributes.add(Attribute("freq_total_main"))
+        attributes.add(Attribute("freq_total_bonus"))
 
         val labelValues = arrayListOf("true", "false")
         attributes.add(Attribute("label", labelValues))
@@ -39,9 +41,11 @@ class LottoModelTrainer {
             val instance = DenseInstance(attributes.size)
             instance.setDataset(instances)
             instance.setValue(attributes[0], row.getValue<Int>("recency").toDouble())
-            instance.setValue(attributes[1], row.getValue<Int>("freq_latest").toDouble())
-            instance.setValue(attributes[2], row.getValue<Int>("freq_total").toDouble())
-            instance.setValue(attributes[3], row.getValue<String>("label"))
+            instance.setValue(attributes[1], row.getValue<Int>("freq_short").toDouble())
+            instance.setValue(attributes[2], row.getValue<Int>("freq_mid").toDouble())
+            instance.setValue(attributes[3], row.getValue<Int>("freq_total_main").toDouble())
+            instance.setValue(attributes[4], row.getValue<Int>("freq_total_bonus").toDouble())
+            instance.setValue(attributes[5], row.getValue<String>("label"))
             instances.add(instance)
         }
 

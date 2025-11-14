@@ -19,20 +19,26 @@ class LottoPredictor(
         instance.setDataset(dataHeader)
 
         instance.setValue(dataHeader.attribute("recency"), (features["recency"] as Int).toDouble())
-        instance.setValue(dataHeader.attribute("freq_latest"), (features["freq_latest"] as Int).toDouble())
-        instance.setValue(dataHeader.attribute("freq_total"), (features["freq_total"] as Int).toDouble())
+        instance.setValue(dataHeader.attribute("freq_short"), (features["freq_short"] as Int).toDouble())
+        instance.setValue(dataHeader.attribute("freq_mid"), (features["freq_mid"] as Int).toDouble())
+        instance.setValue(dataHeader.attribute("freq_total_main"), (features["freq_total_main"] as Int).toDouble())
+        instance.setValue(dataHeader.attribute("freq_total_bonus"), (features["freq_total_bonus"] as Int).toDouble())
 
         return instance
     }
 
     fun predictNextDraw(
         fullHistory: List<LottoTicket>,
-        latestDraws: List<LottoTicket>,
+        latestDrawsShort: List<LottoTicket>,
+        latestDrawsMid: List<LottoTicket>,
         setsToGenerate: Int = 1
     ): List<List<Int>> {
         // 특성을 1회 계산
-        val currentFeaturesMap = featureEngineer.createCurrentFeaturesForPrediction(fullHistory, latestDraws)
-
+        val currentFeaturesMap = featureEngineer.createCurrentFeaturesForPrediction(
+            fullHistory,
+            latestDrawsShort,
+            latestDrawsMid
+        )
         // 미리 계산된 특성으로 예측 실행
         return predictFromFeatures(currentFeaturesMap, setsToGenerate)
     }
