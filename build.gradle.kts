@@ -28,6 +28,10 @@ dependencies {
     // Optional: Add a logging library for Ktor (helps with debugging)
     implementation("ch.qos.logback:logback-classic:1.5.6")
 
+    implementation("io.ktor:ktor-server-cio:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
+
 }
 
 tasks.test {
