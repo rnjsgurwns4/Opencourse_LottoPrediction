@@ -8,14 +8,16 @@ Kotlin/Ktor 기반의 간단한 웹 사이트를 통해 3가지 ML 모델의 성
 
 ## 1. 핵심 기능 및 실행 화면
 
-### 1) 메인 페이지 (전략 선택)
+### 1) 메인 페이지
 
 Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 기능으로 연결됨
 
 * **[미래] 예측하기:** 훈련된 모델을 사용해 다음 회차 번호를 예측
 * **[과거] 검증하기:** 가장 최근 회차를 정답지로 두고, 3개 모델의 성능을 비교한 리포트 확인
+* **[통계] 보기:** 분석한 데이터들을 차트로 시각화
 
-<img width="1280" height="764" alt="화면 캡처 2025-11-15 144946" src="https://github.com/user-attachments/assets/5fe3895a-91dd-4022-b4b5-b19621a03585" />
+<img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/866a29ed-f8cb-4f2a-b23a-d97e552c4cb1" />
+
 
 
 ### 2) 과거 검증
@@ -44,6 +46,12 @@ Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 �
 전략과 생성할 세트 개수(n)를 선택하면, 해당 전략의 모델이 로또 번호 n세트를 생성
 
 <img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/dda6aa13-c383-406c-8c28-2246899e267a" />
+
+### 4) 과거 데이터 시각화
+
+분석에 사용된 데이터들을 시각화
+
+<img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/27c301cf-6ae9-4494-9dd7-f13710dd7785" />
 
 ---
 
