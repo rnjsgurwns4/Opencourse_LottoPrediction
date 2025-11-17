@@ -237,18 +237,15 @@ fun main() {
 
             get("/stats") {
 
-                // 1. 캐시된 1등 예측기('최고 등수' 기준)의 '특성 엔지니어'를 사용
-                //    (어떤 챔피언이든 featureEngineer는 동일하게 작동함)
                 val featureEngineer = bestPredictor_RankStrategy.featureEngineer
 
-                // 2. '현재 시점'의 1~45번 특성 맵을 가져옴
                 val featureMap = featureEngineer.createCurrentFeaturesForPrediction(
                     fullHistoryForPredict,
                     latestDrawsShortForPredict,
                     latestDrawsMidForPredict
                 )
 
-                // 3. Chart.js에 주입할 5개의 데이터 리스트 생성
+                // Chart.js에 주입할 5개의 데이터 리스트 생성
                 val labels = (1..45).toList() // X축 (1~45번)
                 val dataRecency = (1..45).map { featureMap[it]?.get("recency") as Int }
                 val dataFreqShort = (1..45).map { featureMap[it]?.get("freq_short") as Int }
@@ -256,11 +253,10 @@ fun main() {
                 val dataFreqTotalMain = (1..45).map { featureMap[it]?.get("freq_total_main") as Int }
                 val dataFreqTotalBonus = (1..45).map { featureMap[it]?.get("freq_total_bonus") as Int }
 
-                // 4. HTML 응답 (Chart.js 포함)
                 call.respondHtml(HttpStatusCode.OK) {
                     head {
                         title("학습 데이터 시각화")
-                        style { +globalStyles } // 공통 스타일
+                        style { +globalStyles }
                         // Chart.js CDN 추가
                         script(src = "https://cdn.jsdelivr.net/npm/chart.js") {}
                     }
@@ -268,7 +264,6 @@ fun main() {
                         h1 { +"현재 학습 데이터 (특성) 시각화" }
                         p { +"ML 모델은 이 5가지 특성 그래프의 패턴을 학습하여 다음 회차를 예측합니다." }
 
-                        // 차트를 그릴 5개의 <canvas> 태그
                         h2 { +"1. Recency (미출현 기간)" }
                         p { +"(0: 지난주에 나옴, 25: 최근 25주간 안 나옴)" }
                         canvas { id = "chartRecency" }
@@ -292,7 +287,7 @@ fun main() {
                         br()
                         a(href = "/") { +"메인으로 돌아가기" }
 
-                        // ★ 5. (신규) Kotlin 데이터를 JS 변수로 주입하고 차트 그리기
+                        // Kotlin 데이터를 JS 변수로 주입하고 차트 그리기
                         script {
                             unsafe {
                                 // Kotlin List를 JavaScript 배열 문자열로 변환
@@ -304,7 +299,6 @@ fun main() {
                                 const dataFreqTotalMain = ${Json.encodeToString(dataFreqTotalMain)};
                                 const dataFreqTotalBonus = ${Json.encodeToString(dataFreqTotalBonus)};
                                 
-                                // 차트 생성 헬퍼 함수
                                 function createChart(canvasId, chartLabel, data) {
                                     new Chart(document.getElementById(canvasId), {
                                         type: 'bar',
@@ -325,7 +319,6 @@ fun main() {
                                     });
                                 }
                                 
-                                // 5개 차트 그리기
                                 createChart('chartRecency', 'Recency (미출현 기간)', dataRecency);
                                 createChart('chartFreqShort', '최근 10회 빈도', dataFreqShort);
                                 createChart('chartFreqMid', '최근 25회 빈도', dataFreqMid);
