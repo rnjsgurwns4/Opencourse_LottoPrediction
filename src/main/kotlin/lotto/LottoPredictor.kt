@@ -10,7 +10,7 @@ import kotlin.random.Random
 class LottoPredictor(
     private val models: Map<Int, Classifier>, // 45개 모델
     private val dataHeader: Instances,     // 훈련 시 사용한 데이터 헤더
-    private val featureEngineer: FeatureEngineer
+    val featureEngineer: FeatureEngineer
 ) {
 
     // Instance 객체로 변환
