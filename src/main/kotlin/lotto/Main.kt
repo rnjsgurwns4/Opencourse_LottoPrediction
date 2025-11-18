@@ -62,7 +62,7 @@ fun findBestModel(
     strategy: SelectionStrategy
 ): ModelScore {
 
-    // 1. 각 모델의 성적 리스트 생성
+    // 각 모델의 성적 리스트 생성
     val scores = ranksMap.map { (name, rankList) ->
         val wins = rankList.filter { it != Rank.NONE } // 꽝이 아닌 것만 필터링
         ModelScore(
@@ -106,8 +106,14 @@ fun main() {
 
     val modelsToTrain = mapOf(
         "Logistic" to Logistic(),
-        "RandomForest" to RandomForest(),
-        "J48" to J48()
+        "RandomForest_100" to RandomForest(),
+        "RandomForest_500" to RandomForest().apply {
+            numIterations = 500
+        },
+        "J48_Pruned" to J48(),
+        "J48_Unpruned" to J48().apply {
+            unpruned = true
+        }
     )
     // 서버 시작 전에 모든 데이터를 미리 훈련/예측
     runBlocking {
