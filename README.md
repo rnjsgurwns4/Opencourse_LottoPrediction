@@ -29,7 +29,7 @@ Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 �
 * 각 모델은 `[Top 6 1세트] + [확률 샘플링 2세트]`를 제출
 * 이 결과를 바탕으로 2개의 모델을 선발
 
-<img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/949ba871-06c2-4e4b-942c-b0ee26ffd6d8" />
+<img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/2469d53a-0314-410e-92dc-fc338f393145" />
 
 
 ### 3) 미래 예측
