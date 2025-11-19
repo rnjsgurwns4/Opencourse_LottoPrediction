@@ -47,7 +47,7 @@ class LottoPredictor(
         currentFeaturesMap: Map<Int, Map<String, Any>>,
         setsToGenerate: Int = 1
     ): List<List<Int>> {
-        println("[LottoPredictor] 45개 모델을 순회하며 당첨 확률 계산 중")
+        println("45개 모델을 순회하며 당첨 확률 계산 중")
         val probabilities = mutableListOf<Pair<Int, Double>>()
 
         for (num in 1..45) {

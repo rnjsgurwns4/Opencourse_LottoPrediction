@@ -55,7 +55,7 @@ class LottoModelTrainer {
 
     // 훈련
     fun train(trainingData: DataFrame<*>, baseClassifier: Classifier) {
-        println("[LottoModelTrainer] 45개 모델 훈련 시작")
+        println("45개 모델 훈련 시작")
         val modelName = baseClassifier.javaClass.simpleName
 
         models.clear()
@@ -103,7 +103,7 @@ class LottoModelTrainer {
                 throw e
             }
         }
-        println("[LottoModelTrainer] 총 45개 모델 훈련 완료.")
+        println("총 45개 모델 훈련 완료.")
     }
 
     fun getModels(): Map<Int, Classifier> {

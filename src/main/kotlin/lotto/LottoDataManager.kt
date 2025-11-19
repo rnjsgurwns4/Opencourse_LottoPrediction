@@ -28,14 +28,14 @@ class LottoDataManager {
     @Serializable
     private data class ApiResponse(
         val returnValue: String,
-        val drwNo: Int? = null,          // <-- = null 추가
-        val drwNoDate: String? = null,   // <-- = null 추가
-        val drwtNo1: Int? = null,        // <-- = null 추가
-        val drwtNo2: Int? = null,        // <-- = null 추가
-        val drwtNo3: Int? = null,        // <-- = null 추가
-        val drwtNo4: Int? = null,        // <-- = null 추가
-        val drwtNo5: Int? = null,        // <-- = null 추가
-        val drwtNo6: Int? = null,        // <-- = null 추가
+        val drwNo: Int? = null,
+        val drwNoDate: String? = null,
+        val drwtNo1: Int? = null,
+        val drwtNo2: Int? = null,
+        val drwtNo3: Int? = null,
+        val drwtNo4: Int? = null,
+        val drwtNo5: Int? = null,
+        val drwtNo6: Int? = null,
         val bnusNo: Int? = null
     )
 
