@@ -45,13 +45,19 @@ Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 �
 
 전략과 생성할 세트 개수(n)를 선택하면, 해당 전략의 모델이 로또 번호 n세트를 생성
 
-<img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/dda6aa13-c383-406c-8c28-2246899e267a" />
+<img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/b86678a1-bee8-4fed-bb0d-81af454ff876" />
+
 
 ### 4) 과거 데이터 시각화
 
 분석에 사용된 데이터들을 시각화
 
 <img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/27c301cf-6ae9-4494-9dd7-f13710dd7785" />
+
+
+### 5) 실행 영상 링크
+
+추가 예정
 
 ---
 
@@ -66,7 +72,40 @@ Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 �
 
 ---
 
-## 3. 실행 방법
+## 3. 프로젝트 구조
+
+`src/main/kotlin/lotto/` 패키지 내부의 주요 파일 및 역할
+
+### 핵심 로직
+* **TrainingService.kt**: 전체 파이프라인을 총괄하는 서비스입니다.
+    * performTotalTraining(): 데이터 수집 → 과거 검증 → 모델 선발 → 미래 예측기 훈련 → 전역 상태 업데이트의 전 과정을 수행
+    * trainAllModels(): 정의된 모든 모델(Logistic, RF, J48 등)을 일괄 훈련
+* **LottoModelTrainer.kt**: Weka 라이브러리와 직접 통신하여 모델을 학습
+    * train(): 전체 데이터를 45개(번호별) 그룹으로 나누고, AbstractClassifier.makeCopy를 사용해 45개의 개별 모델을 복제/훈련
+* **FeatureEngineer.kt**: 원본 데이터를 ML 학습용 특성(Feature)으로 변환
+    * createTrainingData(): 과거 이력을 바탕으로 5가지 특성(Recency, Freq_Short, Freq_Mid, Total_Main, Total_Bonus)을 계산하여 DataFrame을 생성
+        * **Recency (미출현 기간):** 해당 번호가 마지막으로 당첨된 후 경과한 회차 수
+        * **Freq_Short (단기 빈도):** 최근 10회차 내 출현 횟수 (단기 추세)
+        * **Freq_Mid (중기 빈도):** 최근 25회차 내 출현 횟수 (중기 추세)
+        * **Total_Main (누적 빈도):** 1회차부터 현재까지 메인 번호로 당첨된 총 횟수
+        * **Total_Bonus (보너스 빈도):** 1회차부터 현재까지 보너스 번호로 나온 총 횟수
+* **LottoPredictor.kt**: 훈련된 모델을 사용해 확률을 계산하고 번호를 생성
+    * predictNextDraw(): 45개 모델의 확률값을 취합
+    * getWeightedRandomSample(): 확률 기반 가중치 랜덤 샘플링(Roulette Wheel Selection) 알고리즘을 구현
+
+### 웹 & 유틸리티
+* **Main.kt**: 애플리케이션의 진입점
+    * 초기 훈련을 트리거하고, Ktor 웹 서버를 실행하며 엔드포인트들을 정의
+* **LottoDataManager.kt**: 동행복권 API 크롤링
+    * fetchAllHistory(): 1회차부터 최신 회차까지의 데이터를 수집하고 파싱 오류(Missing Fields)를 처리
+* **Scheduler.kt**: 자동화 시스템
+    * 매주 토요일 저녁, 새로운 당첨 번호가 나오면 자동으로 데이터를 갱신하고 모델을 재학습
+* **AppState.kt**: 훈련된 모델, 캐시된 데이터, 챔피언 정보 등 애플리케이션의 전역 상태(Singleton)를 관리
+* **HtmlTemplates.kt**: CSS 스타일 및 결과 리포트 HTML 생성 로직
+
+---
+
+## 4. 실행 방법
 
 ### 1) 실행
 
@@ -85,7 +124,7 @@ Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 �
 
 ---
 
-## 4. 해결 과정
+## 5. 해결 과정
 
 1.  1개 모델(Logistic), 1개 특성(freq_total: 1회차부터 당시까지 해당 번호가 누적 몇 번 나왔는지). Top 6 예측.
 2.  3개 특성(recency: 최근 몇 주간 안 나왔는지, freq_latest: 최근 10주간 몇 번 나왔는지, freq_total) 추가.
@@ -94,7 +133,7 @@ Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 �
 5. 기존 모델을 튜닝시켜 새롭게 추가된 모델을 포함한 총 5개의 모델로 로또 당첨 확률을 최대한 높이고자 함.
 
 
-## 5. 결론
+## 6. 결론
 
 ### 1) 정답이 없는 문제에 대한 해답
 
@@ -112,6 +151,14 @@ Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 �
 
 이 문제들을 다양한 로직을 통해 해결해 나가면서, 낯선 라이브러리의 내부 동작 원리와 코틀린 생태계를 이해할 수 있었음.
 
-### 3) 최종 요약
+### 3) 향후 계획
 
-비록 로또 1등에 당첨되는 모델을 만들지는 못했지만, '정답이 없는 문제'에 대해 가설을 세우고, 낯선 도구를 사용해 시스템을 구축(Ktor 웹 앱)하며, 그 한계를 검증(과거 검증)하는 전 과정을 완수했다는 점에서 의미가 있다고 생각함.
+AWS + Docker을 이용한 배포, 다양한 모델 추가 및 파라미터 튜닝을 통한 성능 향상.
+
+### 4) 최종 요약
+
+비록 로또 1등에 당첨되는 모델을 만들지는 못했지만, '정답이 없는 문제'에 대해 가설을 세우고, 낯선 도구를 사용해 시스템을 구축(Ktor 웹 앱)하며,
+
+그 한계를 검증(과거 검증)하는 전 과정을 완수했다는 점에서 의미가 있다고 생각함.
+
+거기다가 백그라운드 스케줄러와 웹 UI를 갖춘 서비스를 구축했다는 점에서 미션을 잘 완수했다고 봄.
