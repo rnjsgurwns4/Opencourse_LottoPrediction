@@ -77,31 +77,37 @@ Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 �
 `src/main/kotlin/lotto/` 패키지 내부의 주요 파일 및 역할
 
 ### 핵심 로직
-* **TrainingService.kt**: 전체 파이프라인을 총괄하는 서비스입니다.
-    * performTotalTraining(): 데이터 수집 → 과거 검증 → 모델 선발 → 미래 예측기 훈련 → 전역 상태 업데이트의 전 과정을 수행
-    * trainAllModels(): 정의된 모든 모델(Logistic, RF, J48 등)을 일괄 훈련
-* **LottoModelTrainer.kt**: Weka 라이브러리와 직접 통신하여 모델을 학습
+* **`TrainingService.kt`**: 전체 파이프라인을 총괄하는 서비스입니다.
+    * `performTotalTraining()`: 데이터 수집 → 과거 검증 → 모델 선발 → 미래 예측기 훈련 → 전역 상태 업데이트의 전 과정을 수행
+    * `trainAllModels()`: 정의된 모든 모델(Logistic, RF, J48 등)을 일괄 훈련
+      
+* **`LottoModelTrainer.kt`**: Weka 라이브러리와 직접 통신하여 모델을 학습
     * train(): 전체 데이터를 45개(번호별) 그룹으로 나누고, AbstractClassifier.makeCopy를 사용해 45개의 개별 모델을 복제/훈련
-* **FeatureEngineer.kt**: 원본 데이터를 ML 학습용 특성(Feature)으로 변환
-    * createTrainingData(): 과거 이력을 바탕으로 5가지 특성(Recency, Freq_Short, Freq_Mid, Total_Main, Total_Bonus)을 계산하여 DataFrame을 생성
+      
+* **`FeatureEngineer.kt`**: 원본 데이터를 ML 학습용 특성(Feature)으로 변환
+    * `createTrainingData()`: 과거 이력을 바탕으로 5가지 특성(Recency, Freq_Short, Freq_Mid, Total_Main, Total_Bonus)을 계산하여 DataFrame을 생성
         * **Recency (미출현 기간):** 해당 번호가 마지막으로 당첨된 후 경과한 회차 수
         * **Freq_Short (단기 빈도):** 최근 10회차 내 출현 횟수 (단기 추세)
         * **Freq_Mid (중기 빈도):** 최근 25회차 내 출현 횟수 (중기 추세)
         * **Total_Main (누적 빈도):** 1회차부터 현재까지 메인 번호로 당첨된 총 횟수
         * **Total_Bonus (보너스 빈도):** 1회차부터 현재까지 보너스 번호로 나온 총 횟수
-* **LottoPredictor.kt**: 훈련된 모델을 사용해 확률을 계산하고 번호를 생성
-    * predictNextDraw(): 45개 모델의 확률값을 취합
-    * getWeightedRandomSample(): 확률 기반 가중치 랜덤 샘플링(Roulette Wheel Selection) 알고리즘을 구현
+          
+* **`LottoPredictor.kt`**: 훈련된 모델을 사용해 확률을 계산하고 번호를 생성
+    * `predictNextDraw()`: 45개 모델의 확률값을 취합
+    * `getWeightedRandomSample()`: 확률 기반 가중치 랜덤 샘플링(Roulette Wheel Selection) 알고리즘을 구현
 
 ### 웹 & 유틸리티
-* **Main.kt**: 애플리케이션의 진입점
+* **`Main.kt`**: 애플리케이션의 진입점
     * 초기 훈련을 트리거하고, Ktor 웹 서버를 실행하며 엔드포인트들을 정의
-* **LottoDataManager.kt**: 동행복권 API 크롤링
-    * fetchAllHistory(): 1회차부터 최신 회차까지의 데이터를 수집하고 파싱 오류(Missing Fields)를 처리
-* **Scheduler.kt**: 자동화 시스템
+      
+* **`LottoDataManager.kt`**: 동행복권 API 크롤링
+    * `fetchAllHistory()`: 1회차부터 최신 회차까지의 데이터를 수집하고 파싱 오류(Missing Fields)를 처리
+* **`Scheduler.kt`**: 자동화 시스템
     * 매주 토요일 저녁, 새로운 당첨 번호가 나오면 자동으로 데이터를 갱신하고 모델을 재학습
-* **AppState.kt**: 훈련된 모델, 캐시된 데이터, 챔피언 정보 등 애플리케이션의 전역 상태(Singleton)를 관리
-* **HtmlTemplates.kt**: CSS 스타일 및 결과 리포트 HTML 생성 로직
+      
+* **`AppState.kt`**: 훈련된 모델, 캐시된 데이터, 챔피언 정보 등 애플리케이션의 전역 상태(Singleton)를 관리
+  
+* **`HtmlTemplates.kt`**: CSS 스타일 및 결과 리포트 HTML 생성 로직
 
 ---
 
