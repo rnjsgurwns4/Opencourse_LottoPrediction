@@ -123,20 +123,21 @@ https://drive.google.com/file/d/1eDZOOJH7Cx0LWWiPlpKcM7IYBOfb6P14/view?usp=drive
 graph TD
     subgraph "1. Data & Training Pipeline"
         API[Lotto API] -->|LottoDataManager| Raw[Raw History]
-        Raw -->|FeatureEngineer| Features[DataFrame (5 Features)]
+        Raw -->|FeatureEngineer| Features["DataFrame (5 Features)"]
         Features -->|TrainingService| Train[Train All Models]
-        Train -->|LottoModelTrainer| Weka[Weka Models (Logistic, RF, J48)]
-        Weka -->|Past Validation| Champ[Select Champion Model]
-        Champ -->|Update| State[AppState (Global State)]
+        Train -->|LottoModelTrainer| Weka["Weka Models"]
+        Weka -->|Past Validation| Champ[Select Model]
+        Champ -->|Update| State["AppState (Global State)"]
     end
 
     subgraph "2. Service & Automation"
-        User[User / Web Browser] -->|HTTP Request| Main[Main.kt (Ktor Server)]
+        User[User / Web Browser] -->|HTTP Request| Main["Main.kt (Ktor Server)"]
         Main -->|Query| State
         State -->|LottoPredictor| Predict[Predict Next Draw]
         Predict -->|Response| User
         Clock[Scheduler] -->|Every Saturday 21:15| API
     end
+```
 
 ---
 
