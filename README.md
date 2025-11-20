@@ -109,10 +109,34 @@ https://drive.google.com/file/d/1eDZOOJH7Cx0LWWiPlpKcM7IYBOfb6P14/view?usp=drive
   
 * **`HtmlTemplates.kt`**: CSS 스타일 및 결과 리포트 HTML 생성 로직
 
+* **`Rank.kt`**: 로또 당첨 등수 정의 및 판별 로직
+
 
 `src/test/kotlin/lotto/` 패키지 내부의 주요 파일 및 역할
 
 * **`FeatureEngineerTest.kt`**:  5가지 특성(Recency, Freq_Short, Freq_Mid, Total_Main, Total_Bonus)이 정확하게 계산되는지 검증하는 종합 테스트
+
+
+### 시스템 플로우차트 (System Architecture)
+
+```mermaid
+graph TD
+    subgraph "1. Data & Training Pipeline"
+        API[Lotto API] -->|LottoDataManager| Raw[Raw History]
+        Raw -->|FeatureEngineer| Features[DataFrame (5 Features)]
+        Features -->|TrainingService| Train[Train All Models]
+        Train -->|LottoModelTrainer| Weka[Weka Models (Logistic, RF, J48)]
+        Weka -->|Past Validation| Champ[Select Champion Model]
+        Champ -->|Update| State[AppState (Global State)]
+    end
+
+    subgraph "2. Service & Automation"
+        User[User / Web Browser] -->|HTTP Request| Main[Main.kt (Ktor Server)]
+        Main -->|Query| State
+        State -->|LottoPredictor| Predict[Predict Next Draw]
+        Predict -->|Response| User
+        Clock[Scheduler] -->|Every Saturday 21:15| API
+    end
 
 ---
 
