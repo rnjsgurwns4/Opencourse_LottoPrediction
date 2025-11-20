@@ -57,7 +57,7 @@ Ktor 웹 서버 `http://localhost:8080`에서 실행되며, 두 가지 핵심 �
 
 ### 5) 실행 영상 링크
 
-추가 예정
+https://drive.google.com/file/d/1eDZOOJH7Cx0LWWiPlpKcM7IYBOfb6P14/view?usp=drive_link
 
 ---
 
